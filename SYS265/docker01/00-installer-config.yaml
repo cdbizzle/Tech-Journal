@@ -1,0 +1,10 @@
+# This is the network config written by 'subiquity'
+network:
+  ethernets:
+    ens160:
+      addresses: [10.0.5.12/24]
+      gateway4: 10.0.5.2
+      nameservers:
+        search: [cole.local]
+        addresses: [10.0.5.5]
+  version: 2
