@@ -1,7 +1,7 @@
 #secure-ssh.sh
 #author cole
 #creates a new ssh user using $1 parameter
-sudo useradd -m -d /home/$1 -s /bin/bash/ $1
+sudo adduser $1
 sudo mkdir /home/$1/.ssh
 #adds a public key from the local repo
 sudo cp /home/cole/Tech-Journal/SYS265/linux/public-keys/id_rsa.pub /home/$1/.ssh/authorized_keys
