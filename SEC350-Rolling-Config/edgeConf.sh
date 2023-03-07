@@ -4,7 +4,7 @@ set firewall name DMZ-to-LAN enable-default-log
 set firewall name DMZ-to-LAN rule 1 action 'accept'
 set firewall name DMZ-to-LAN rule 1 state established 'enable'
 set firewall name DMZ-to-LAN rule 10 action 'accept'
-set firewall name DMZ-to-LAN rule 10 description 'Wazuh agent coms with Wazuh server'
+set firewall name DMZ-to-LAN rule 10 description 'WAZUH agent -> WAZUH server'
 set firewall name DMZ-to-LAN rule 10 destination address '172.16.200.10'
 set firewall name DMZ-to-LAN rule 10 destination port '1514,1515'
 set firewall name DMZ-to-LAN rule 10 protocol 'tcp'
