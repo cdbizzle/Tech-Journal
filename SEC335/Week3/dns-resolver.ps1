@@ -1,6 +1,6 @@
 ﻿param($prefix, $server)
 
-for ($i = 1; $i -le 255; $i++) {
+for ($i = 1; $i -le 254; $i++) {
 
     $ip = "$prefix.$i"
     $output = Resolve-DnsName -DnsOnly "$ip" -Server $server -ErrorAction Ignore
