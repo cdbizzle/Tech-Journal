@@ -1,5 +1,3 @@
-## high-availability
-<pre>
 set high-availability vrrp group LAN address 10.0.5.1/24
 set high-availability vrrp group LAN interface 'eth1'
 set high-availability vrrp group LAN vrid '10'
@@ -9,18 +7,12 @@ set high-availability vrrp group optgroup vrid '20'
 set high-availability vrrp group wangroup3 address 10.0.17.103/24
 set high-availability vrrp group wangroup3 interface 'eth0'
 set high-availability vrrp group wangroup3 vrid '153'
-</pre>
-## interface
-<pre>
 set interfaces ethernet eth0 address '10.0.17.73/24'
 set interfaces ethernet eth0 description 'WAN'
 set interfaces ethernet eth1 address '10.0.5.3/24'
 set interfaces ethernet eth1 description 'LAN'
 set interfaces ethernet eth2 address '10.0.6.3/24'
 set interfaces ethernet eth2 description 'OPT'
-</pre>
-## nat
-<pre>
 set nat destination rule 20 description 'Allow SSH to web01 via 10.0.17.103'
 set nat destination rule 20 destination address '10.0.17.103'
 set nat destination rule 20 destination port '22'
@@ -41,30 +33,12 @@ set nat source rule 10 translation address 'masquerade'
 set nat source rule 20 outbound-interface 'eth0'
 set nat source rule 20 source address '10.0.6.0/24'
 set nat source rule 20 translation address 'masquerade'
-</pre>
-## system
-<pre>
 set system host-name 'vyos02'
 set system name-server '10.0.17.2'
-</pre>
-## protocols
-<pre>
 set protocols static route 0.0.0.0/0 next-hop 10.0.17.2
-</pre>
-## service
-<pre>
 set service dns forwarding allow-from '10.0.5.0/24'
 set service dns forwarding allow-from '10.0.6.0/24'
 set service dns forwarding listen-address '10.0.5.1'
 set service dns forwarding listen-address '10.0.6.1'
 set service dns forwarding system
 set service ssh listen-address '0.0.0.0'
-</pre>
-## zone
-<pre>
-
-</pre>
-## firewall
-<pre>
-
-</pre>
