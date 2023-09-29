@@ -1,6 +1,6 @@
 import getpass
 import json
-from pyVim.connect import SmartConnect, Disconnect
+from pyVim.connect import SmartConnect
 from pyVmomi import vim
 import ssl
 
