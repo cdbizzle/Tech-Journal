@@ -77,4 +77,3 @@ table_headers = ["VM Name", "Hostname", "IP", "Power State", "Number of CPUs", "
 
 # Print the table using tabulate
 print(tabulate(table_data, headers=table_headers, tablefmt="simple_grid"))
-
