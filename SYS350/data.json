@@ -1,0 +1,7 @@
+{ "vcenter": [
+    {
+    "host": "vcenter.cole.local",
+    "user": "cole-adm"
+    }
+]
+}
