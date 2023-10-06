@@ -44,7 +44,6 @@ content = service_instance.RetrieveContent()
 root_folder = content.rootFolder
 
 # Traverse the inventory to find all VMs and their hostnames
-# (Rest of your code remains unchanged)
 
 # Get the root folder (datacenter)
 content = service_instance.RetrieveContent()
