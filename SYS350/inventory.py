@@ -64,42 +64,115 @@ def search(vms, filter_name=None):
             filtered_vms.append(vm)
     return filtered_vms
 
-# Ask the user for a VM name to filter by
-search_name = input("Enter a VM name to see details or leave empty for all: ")
+choice = input("Would you like to make changes to any VMs? y/n: ")
 
-# Store VM info in a list of lists
-filtered_vms = search(vms, search_name)
-for vm in filtered_vms:
-    if not vm.config.template:
-        vm_name = vm.name
-        vm_hostname = vm.summary.guest.hostName
-        vm_ip = vm.summary.guest.ipAddress
-        vm_power_state = vm.summary.runtime.powerState
-        vm_num_cpus = vm.config.hardware.numCPU
-        vm_mem = vm.config.hardware.memoryMB / 1024
-        table_data2.append([
-            vm_name,
-            vm_hostname,
-            vm_ip,
-            vm_power_state,
-            vm_num_cpus,
-            vm_mem,
-        ])
+if choice == "n":
 
-# Create another list to store table data
-table_data1 = []
+    # Ask the user for a VM name to filter by
+    search_name = input("Enter a VM name to see details or leave empty for all: ")
 
-# Add data to list
-table_data1.append([
-    domain_username,
-    vcenter_server,
-    source_ip,
-])
+    # Store VM info in a list of lists
+    filtered_vms = search(vms, search_name)
+    for vm in filtered_vms:
+        if not vm.config.template:
+            vm_name = vm.name
+            vm_hostname = vm.summary.guest.hostName
+            vm_ip = vm.summary.guest.ipAddress
+            vm_power_state = vm.summary.runtime.powerState
+            vm_num_cpus = vm.config.hardware.numCPU
+            vm_mem = vm.config.hardware.memoryMB / 1024
+            table_data2.append([
+                vm_name,
+                vm_hostname,
+                vm_ip,
+                vm_power_state,
+                vm_num_cpus,
+                vm_mem,
+            ])
 
-# Define headers for the table
-table_headers1 = ["DOMAIN\\Username", "vCenter Server", "Source IP Address"]
-table_headers2 = ["VM Name", "Hostname", "IP", "Power State", "Number of CPUs", "Memory (GB)"]
+    # Create another list to store table data
+    table_data1 = []
 
-# Print the table using tabulate
-print(tabulate(table_data1, headers=table_headers1, tablefmt="simple_grid"))
-print(tabulate(table_data2, headers=table_headers2, tablefmt="simple_grid"))
+    # Add data to list
+    table_data1.append([
+        domain_username,
+        vcenter_server,
+        source_ip,
+    ])
+
+    # Define headers for the table
+    table_headers1 = ["DOMAIN\\Username", "vCenter Server", "Source IP Address"]
+    table_headers2 = ["VM Name", "Hostname", "IP", "Power State", "Number of CPUs", "Memory (GB)"]
+
+    # Print the table using tabulate
+    print(tabulate(table_data1, headers=table_headers1, tablefmt="simple_grid"))
+    print(tabulate(table_data2, headers=table_headers2, tablefmt="simple_grid"))
+
+elif choice == "y":
+    # Create menu for VM actions
+    print("-------------------\nMenu:")
+    print("[1] Power On VM")
+    print("[2] Power Off VM")
+    print("[3] Reboot VM")
+    print("[4] Take Snapshot")
+    print("[5] Clone VM")
+    print("[6] Delete VM\n-------------------")
+    menu_choice = input("Enter your choice (1-6): ")
+    change_vm = input("Which VM would you like to change: ")
+
+    if menu_choice == "1":
+        filtered_vms = search(vms, change_vm)
+        for vm in filtered_vms:
+            if not vm.config.template:
+                # Power on the VM
+                vm.PowerOn()
+                print(f"Powering on {vm.name}... Done.")
+  
+    if menu_choice == "2":
+        filtered_vms = search(vms, change_vm)
+        for vm in filtered_vms:
+            if not vm.config.template:
+                # Power off the VM
+                vm.PowerOff()
+                print(f"Powering off {vm.name}... Done.")
+
+    if menu_choice == "3":
+            filtered_vms = search(vms, change_vm)
+            for vm in filtered_vms:
+                if not vm.config.template:
+                    # Power off the VM
+                    vm.RebootGuest()
+                    print(f"Rebooting {vm.name}... Done.")   
+
+    if menu_choice == "4":
+        snapshot_name = input("Snapshot name: ")
+        snapshot_desc = input("Snapshot description: ")
+        filtered_vms = search(vms, change_vm)
+        for vm in filtered_vms:
+            if not vm.config.template:
+                # Take snapshot
+                vm.CreateSnapshot(name=snapshot_name, description=snapshot_desc, memory=True, quiesce=False)
+                print(f"Taking snapshot of {vm.name}... Done")
+    
+    # Define 'datacenter' for clone folder
+    datacenter = content.rootFolder.childEntity[0]
+ 
+    if menu_choice == "5":
+        clone_name = input('What would you like to name the clone: ')
+        clone_spec = vim.vm.CloneSpec()
+        clone_spec.location = vim.vm.RelocateSpec(datastore=None, host=None, pool=None, diskMoveType="createNewChildDiskBacking")
+        clone_folder = datacenter.vmFolder
+        filtered_vms = search(vms, change_vm)
+        for vm in filtered_vms:
+            if not vm.config.template:
+                # Clone VM
+                vm.CloneVM_Task(folder=clone_folder, name=clone_name, spec=clone_spec)
+                print(f"Cloning {vm.name}... Done")
+
+    if menu_choice == "6":
+        filtered_vms = search(vms, change_vm)
+        for vm in filtered_vms:
+            if not vm.config.template:
+                # Delete VM
+                vm.Destroy_Task()
+                print(f"Deleting {vm.name}... Done")
