@@ -110,13 +110,13 @@ if choice == "n":
 
 elif choice == "y":
     # Create menu for VM actions
-    print("-------------------\nMenu:")
-    print("[1] Power On VM")
-    print("[2] Power Off VM")
-    print("[3] Reboot VM")
-    print("[4] Take Snapshot")
-    print("[5] Clone VM")
-    print("[6] Delete VM\n-------------------")
+    print("+-------------------+\n| Menu:             |")
+    print("| [1] Power On VM   |")
+    print("| [2] Power Off VM  |")
+    print("| [3] Reboot VM     |")
+    print("| [4] Take Snapshot |")
+    print("| [5] Clone VM      |")
+    print("| [6] Delete VM     |\n+-------------------+")
     menu_choice = input("Enter your choice (1-6): ")
     change_vm = input("Which VM would you like to change: ")
 
