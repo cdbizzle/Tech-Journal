@@ -1,4 +1,4 @@
-# DeezCrypt
+# deEzCrypt
 
 DeezCrypt is a command-line tool for file encryption and decryption using symmetric and asymmetric keys.
 
