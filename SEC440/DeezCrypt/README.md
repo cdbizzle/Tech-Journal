@@ -22,30 +22,30 @@ Run `deezcrypt.py` with the following command-line options:
 
 Generate a new random symmetric key:
 
-    ```shell
+    ```
     python deezcrypt.py -n
     ```
 
 Encrypt a file with a random symmetric key:
 
-    ```shell
+    ```
     python deezcrypt.py -s myfile.txt
     ```
 
 Encrypt the symmetric key with an asymmetric key:
 
-    ```shell
+    ```
     python deezcrypt.py -a
     ```
 
 Decrypt the encrypted symmetric key with an asymmetric key:
 
-    ```shell
+    ```
     python deezcrypt.py -d
     ```
 
 Decrypt an encrypted file with a symmetric key:
 
-    ```shell
+    ```
     python deezcrypt.py -x myfile.deez
     ```
