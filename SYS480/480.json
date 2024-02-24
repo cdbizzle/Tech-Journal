@@ -1,4 +1,8 @@
 {
     "vcenterServer": "vcenter.cole.local",
-    "vmFolder": "BASEVM"
+    "vmFolder": "BASE-VM",
+    "esxiHost": "192.168.7.16",
+    "datastore": "datastore2",
+    "defaultNetwork": "480-WAN",
+    "defaultSnapshot": "Base"
 }

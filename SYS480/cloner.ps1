@@ -6,7 +6,7 @@ Write-Host "`nSuccessfully connected to $vcenter"
 # Assign variables
 $name = Read-Host "Which VM would you like to create a base VM for"
 $vm = Get-VM -Name $name
-$snapshot = Get-Snapshot -VM $vm -Name "base"
+$snapshot = Get-Snapshot -VM $vm -Name "Base"
 $vmhost = Get-VMHost -Name "192.168.7.16"
 $ds = Get-Datastore -Name "datastore2"
 $linkedname = "{0}.linked" -f $vm.name
@@ -18,7 +18,7 @@ $linkedvm = New-VM -LinkedClone -Name $linkedname -VM $vm -ReferenceSnapshot $sn
 $newvm = New-VM -Name "$name.V2" -VM $linkedvm -VMHost $vmhost -Datastore $ds
 
 # Take a new snapshot
-$snapshotname = "base"
+$snapshotname = "Base"
 New-Snapshot -VM $newvm  -Name $snapshotname
 
 # Delete original temporary VM
