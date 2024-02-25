@@ -17,61 +17,16 @@ Write-Host $banner
 }
 function 480Connect([string] $server)
 {
+    # Check if already connected to a vCenter server
     $con = $global:DefaultVIServer
     if ($con){
         $msg = "Already connected to {0}`n" -f $con
         Write-Host $msg -ForegroundColor Green
     } else {
+        # Connect to the specified vCenter server
         $con = Connect-VIServer -Server $server
     }
-}
-function 480fullClone([string] $name, $vm, $snapshot, $vmhost, $ds, $linkedname)
-{
-# Assign variables
-$name = Read-Host "Which VM would you like to create a base VM for"
-$vm = Get-VM -Name $name
-$snapshot = Get-Snapshot -VM $vm -Name "base"
-$vmhost = Get-VMHost -Name "192.168.7.16"
-$ds = Get-Datastore -Name "datastore2"
-$linkedname = "{0}.linked" -f $vm.name
-
-# Build the temporary VM
-$linkedvm = New-VM -LinkedClone -Name $linkedname -VM $vm -ReferenceSnapshot $snapshot -VMHost $vmhost -Datastore $ds
-
-# Build the new VM
-$newvm = New-VM -Name "$name.V2" -VM $linkedvm -VMHost $vmhost -Datastore $ds
-
-# Take a new snapshot
-$snapshotname = "base"
-New-Snapshot -VM $newvm  -Name $snapshotname
-
-# Delete original temporary VM
-$linkedvm | Remove-VM
-
-# Print success report
-Write-Host "`nNew VM named $newvm has successfully been created"
-Write-Host "New snapshot named $snapshotname has successfully been created"
-}
-function 480linkedClone([string] $name, $vm, $snapshot, $vmhost, $ds, $linkedname)
-{
-# Assign variables
-Get-VM | Select-Object Name
-$name = Read-Host "Which VM would you like to create a base VM for"
-$vm = Get-VM -Name $name
-$snapshot = Get-Snapshot -VM $vm -Name "base"
-$vmhost = Get-VMHost -Name "192.168.7.16"
-$ds = Get-Datastore -Name "datastore2"
-$linkedclone = Read-Host "What would you like to name this linked clone"
-
-# Build the temporary VM
-$linkedvm = New-VM -LinkedClone -Name $linkedclone -VM $vm -ReferenceSnapshot $snapshot -VMHost $vmhost -Datastore $ds
-$linkedvm | Get-NetworkAdapter | Select-Object NetworkName
-$netname = Read-Host "What network adapter should $linkedclone be on"
-$linkedvm | Get-NetworkAdapter | Set-NetworkAdapter -NetworkName $netname
-
-# Print success report
-Write-Host "`nNew linked clone named $linkedclone has successfully been created"
-Write-Host "New linked clone named $linkedclone has been set to $netname network adapter"
+    Write-Host "`n----------------------------------------"
 }
 function 480Config([string]$configPath) 
 {
@@ -86,12 +41,14 @@ function 480Config([string]$configPath)
     }
     else
     {
+        # Return a yellow alert message if no config file is found
         Write-Host -ForegroundColor Yellow "No configuration file found at $configPath"
     }
     return $conf
 }
 function 480pickVM()
 {
+    # Prompt the user to select a VM
     Write-Host "Select a VM:"
     $selectedVM = $null
     try {
@@ -116,6 +73,7 @@ function 480pickVM()
         $chosenVM = $selectedVM.name
         Write-Host "`nYou have chosen" -NoNewline
         Write-Host " $chosenVM" -ForegroundColor Green
+        Write-Host "`----------------------------------------"
         return $selectedVM
     }
     catch {
@@ -129,14 +87,14 @@ function 480pickDS()
     $datastores = Get-Datastore | Where-Object { $_.Name -ne $conf.datastore }
 
     # Display available datastores to the user
-    Write-Host "`nChoose from these available datastores:"
+    Write-Host "Choose from these available datastores:"
     for ($i = 0; $i -lt $datastores.Count; $i++) {
         $index = $i + 1
         Write-Host "[$index] $($datastores[$i].Name)"
     }
 
     # Prompt the user to pick a datastore index
-    $datastoreIndex = Read-Host "`nWhich datastore [X] would you like to select? (default: $($conf.datastore))"
+    $datastoreIndex = Read-Host "Which datastore [X] would you like to select? (default: $($conf.datastore))"
 
     # Set the selected datastore based on user input
     if ([string]::IsNullOrEmpty($datastoreIndex)) {
@@ -147,6 +105,7 @@ function 480pickDS()
     # Check if the input is a valid number
     if (-not [int]::TryParse($datastoreIndex, [ref]$null) -or $datastoreIndex -lt 1 -or $datastoreIndex -gt $datastore.Count) {
         Write-Host "Invalid input. Please enter a valid number.`n" -ForegroundColor Yellow
+        
         # Prompt the user to try again if they gave an invalid input
         $datastoreIndex = Read-Host "Which datastore [X] would you like to select? (default: $($conf.datastore))"
     }
@@ -155,18 +114,23 @@ function 480pickDS()
     # Return the chosen datastore
     Write-Host "`nYou have chosen" -NoNewline
     Write-Host " $datastore" -ForegroundColor Green
+    Write-Host "----------------------------------------"
     return $datastore
 }
 
 function 480pickSnapshot()
 {   
-    Write-Host "`nDisplaying available snapshots for $($selectedVM.Name):"
+    # Display available snapshots for the selected VM
+    Write-Host "Displaying available snapshots for $($selectedVM.Name):"
     $snapshots = $selectedVM | Get-Snapshot | Select-Object -ExpandProperty Name
-    for ($i = 0; $i -lt $snapshots.Count; $i++) {
-        $index = $i + 1
-        Write-Host "[$index] $($snapshots[$i])"
+
+    # Iterate through the snapshots and display them to the user
+    foreach ($snapshot in $snapshots) {
+        $index = $snapshots.IndexOf($snapshot) + 1
+        Write-Host "[$index] $snapshot"
     }
 
+    # Prompt the user to select a snapshot
     $snapshotIndex = Read-Host "Which snapshot [X] would you like to select? (default: $($conf.defaultSnapshot))"
 
     # Set the selected snapshot based on user input
@@ -176,32 +140,88 @@ function 480pickSnapshot()
         # Check if the input is a valid number
         if (-not [int]::TryParse($snapshotIndex, [ref]$null) -or $snapshotIndex -lt 1 -or $snapshotIndex -gt $snapshots.Count) {
             Write-Host "Invalid input. Please enter a valid number.`n" -ForegroundColor Yellow
+
             # Prompt the user to try again if they gave an invalid input
             $snapshotIndex = Read-Host "Which snapshot [X] would you like to select? (default: $($conf.defaultSnapshot))"
+            
+            if ([string]::IsNullOrEmpty($snapshotIndex)) {
+                $snapshotName = $conf.defaultSnapshot
+            } else {
+                $snapshotName = $snapshots[$snapshotIndex - 1]
+            }
+        } else {
+            $snapshotName = $snapshots[$snapshotIndex - 1]
         }
-        $snapshotName = $snapshots[$snapshotIndex - 1]
     }
 
     # Return the chosen snapshot
     Write-Host "`nYou have chosen" -NoNewline
     Write-Host " $snapshotName" -ForegroundColor Green
+    Write-Host "----------------------------------------"
     return $snapshotName
 }
 
 function 480pickHost()
 {
-    Write-Host "`nDefault host: $($conf.esxiHost)"
-    $changeHost = Read-Host "Do you want to change the host? (y/N)"
+    # Prompt the user if they want to change the host
+    Write-Host "Default host: $($conf.esxiHost)"
 
-    if ($changeHost -eq "y") {
-        $hostName = Read-Host "Enter the IP of the host you would like to select"
-        $esxiHost = $hostName
-    } else {
-        $esxiHost = $conf.esxiHost
+    $validInput = $false
+    while (-not $validInput) {
+        $changeHost = Read-Host "Do you want to change the host? (y/N)"
+
+        # Check if the user wants to change the host
+        if ($changeHost -eq "y") {
+            # Prompt the user for the IP of the host they want to select
+            $hostName = Read-Host "Enter the IP of the host you would like to select"
+            $esxiHost = $hostName
+            $validInput = $true
+        } elseif ($changeHost -eq "n" -or [string]::IsNullOrEmpty($changeHost)) {
+            # Use the default host specified in the configuration
+            $esxiHost = $conf.esxiHost
+            $validInput = $true
+        } else {
+            Write-Host "Invalid input. Please enter 'y' to change the host or 'n' to use the default host.`n" -ForegroundColor Yellow
+        }
     }
 
     # Return the chosen host
     Write-Host "`nYou have chosen" -NoNewline
     Write-Host " $esxiHost" -ForegroundColor Green
+    Write-Host "----------------------------------------"
     return $esxiHost
+}
+
+function 480fullClone([string] $vm, $snap, $esxihost, $ds)
+{
+    # Prompt the user if they want to create a new full clone
+    $createFullClone = Read-Host "Do you want to create a new full clone? (Y/n)"
+
+    if ([string]::IsNullOrEmpty($createFullClone) -or $createFullClone -eq "Y") {
+        # Prompt the user for the new full clone name
+        $vmName = Read-Host "Enter the name of the new full clone VM"
+        
+        # Build the temporary VM
+        $linkedVM = New-VM -LinkedClone -Name "$vmName.temp" -VM $selectedVM -ReferenceSnapshot $selectedSnap -VMHost $selectedHost -Datastore $selectedDS
+
+        # Build the new permanent VM
+        $newVM = New-VM -Name $vmName -VM $linkedVM -VMHost $selectedHost -Datastore $selectedDS
+
+        # Take a new snapshot
+        $newSnap = "Base"
+        New-Snapshot -VM $newVM  -Name $newSnap
+
+        # Delete original temporary VM
+        $linkedVM | Remove-VM
+
+        # Print success report
+        Write-Host "`nNew VM named $newVM has successfully been created" -ForegroundColor Green
+        Write-Host "New snapshot named $newSnap has successfully been created" -ForegroundColor Green
+
+    } elseif ($createFullClone -eq "n" -or $createFullClone -eq "N") {
+        Write-Host "Exiting without creating a new full clone." -ForegroundColor Yellow
+        
+    } else {
+        Write-Host "Invalid input. Exiting without creating a new full clone." -ForegroundColor Yellow
+    }
 }
