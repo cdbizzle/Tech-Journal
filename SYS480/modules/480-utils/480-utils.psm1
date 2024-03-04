@@ -225,3 +225,68 @@ function 480fullClone([string] $vm, $snap, $esxihost, $ds)
         Write-Host "Invalid input. Exiting without creating a new full clone." -ForegroundColor Yellow
     }
 }
+
+function 480newNet()
+{
+    # Prompt the user if they want to create a new network
+    $promptNewNetwork = Read-Host "Would you like to create a new network? (Y/n)"
+
+    if ([string]::IsNullOrEmpty($promptNewNetwork) -or $promptNewNetwork -eq "Y") {
+        # Create a new network (virtual switch and portgroup
+        $newNetwork = Read-Host "Enter the name of the new network"
+        New-VirtualSwitch -Name $newNetwork -VMHost $conf.esxiHost
+        New-VirtualPortGroup -VirtualSwitch $newNetwork -Name $newNetwork
+
+        # Print success report
+        Write-Host "`nNew network named $newNetwork has successfully been created, review details above" -ForegroundColor Green
+
+    } elseif ($promptNewNetwork -eq "n" -or $promptNewNetwork -eq "N") {
+        # Print exit message and exit the script
+        Write-Host "Exiting..." -ForegroundColor Yellow
+        Exit
+
+    } else {
+        Write-Host "Invalid input. Please enter 'Y' to create a new network or 'N' to skip." -ForegroundColor Yellow
+        480newNet  # Call the 480newNet function to allow the user to try again
+    }
+}
+
+function 480getIP()
+{
+# Thanks users "mcity" and "LucD" on the forum linked below for helping with this function
+# https://communities.vmware.com/t5/VMware-PowerCLI-Discussions/Get-List-of-IP-addresses-for-each-VM/td-p/2238590
+
+    # Prompt the user if they want to see networking details
+    $promptDetails = Read-Host "Would you like to see networking details of a certain machine? (Y/n)"
+
+    if ([string]::IsNullOrEmpty($promptDetails) -or $promptDetails -eq "Y") {
+        # Prompt the user to select a VM
+        $getName = Read-Host "Enter a VM name to see details (ENTER for all)"
+        
+            # If $getName is empty or null, retrieve networking details for all VMs
+            if([string]::IsNullOrEmpty($getName)) {
+                $outputDetails = foreach($vm in Get-VM){
+                    $obj = [ordered]@{
+                        Name = $vm.Name
+                        "MAC Address" = (Get-NetworkAdapter -VM $vm | Select-Object -ExpandProperty MacAddress -First 1)
+                        "IP Address" = $vm.Guest.IPAddress[0]
+                    }              
+                    New-Object PSObject -Property $obj                           
+                }
+                $outputDetails
+            }
+
+            else {
+                #Return the networking details of the selected VM
+                Get-VM -Name $getName | Select-Object Name, @{N="MAC Address";E={@(Get-NetworkAdapter -VM $getName | Select-Object -ExpandProperty MacAddress -First 1)}}, @{N="IP Address";E={@($_.guest.IPAddress[0])}}
+            }
+
+        } elseif ($promptDetails -eq "n" -or $promptDetails -eq "N") {
+            Write-Host "Exiting..." -ForegroundColor Yellow
+            Exit
+
+        } else {
+            Write-Host "Invalid input. Please enter 'Y' to see details or 'N' to skip." -ForegroundColor Yellow
+            480getIP  # Call the 480getIP function to allow the user to try again
+        }
+}
