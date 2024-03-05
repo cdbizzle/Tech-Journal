@@ -287,6 +287,6 @@ function 480getIP()
 
         } else {
             Write-Host "Invalid input. Please enter 'Y' to see details or 'N' to skip." -ForegroundColor Yellow
-            480getIP  # Call the 480getIP function to allow the user to try again
+            480getIP  # Call the 480getIP function to allow the user to try again properly
         }
 }
