@@ -290,3 +290,80 @@ function 480getIP()
             480getIP  # Call the 480newNet function to allow the user to try again
         }
 }
+
+function 480startStop()
+{
+    # Prompt the user if they want to start or stop a VM
+    Write-Host "`nThis is the current powerstate of the VMs"
+    Get-VM
+
+    $promptStartStop = Read-Host "`nWould you like to start or stop a VM? (Y/n)"
+
+    if ([string]::IsNullOrEmpty($promptStartStop) -or $promptStartStop -eq "Y") {
+        # Prompt the user to select a VM
+        $vmName = Read-Host "Enter the name of the VM you would like to start or stop"
+
+        # Prompt the user to select an action
+        $action = Read-Host "Would you like to start or stop the VM? (start/stop)"
+
+        # Start or stop the selected VM based on user input
+        if ($action -eq "start") {
+            Start-VM -VM $vmName
+            Write-Host "`n$vmName has been started" -ForegroundColor Green
+
+        } elseif ($action -eq "stop") {
+            Stop-VM -VM $vmName
+            Write-Host "`n$vmName has been stopped" -ForegroundColor Green
+
+        } else {
+            Write-Host "Invalid input. Please enter 'start' or 'stop'." -ForegroundColor Yellow
+            480startStop  # Call the 480startStop function to allow the user to try again
+        }
+
+    } elseif ($promptStartStop -eq "n" -or $promptStartStop -eq "N") {
+        Write-Host "Exiting..." -ForegroundColor Yellow
+        Exit
+
+    } else {
+        Write-Host "Invalid input. Please enter 'Y' to start or stop a VM or 'N' to skip." -ForegroundColor Yellow
+        480startStop  # Call the 480startStop function to allow the user to try again
+    }
+}
+
+function 480setNetwork()
+{
+    # Prompt the user if they want to change the network of a VM
+    $promptChangeNetwork = Read-Host "Would you like to change the network of a VM? (Y/n)"
+
+    if ([string]::IsNullOrEmpty($promptChangeNetwork) -or $promptChangeNetwork -eq "Y") {
+        # Prompt the user to select a VM
+        $vmName = Read-Host "Enter the name of the VM you would like to change the network for"
+        Write-Host "`nThe current network adapter(s) for $vmName"
+        Get-NetworkAdapter -VM $vmName
+        $networkAdapters = Get-NetworkAdapter -VM $vmName
+
+        # Prompt the user to select a network adapter
+        $adapterIndex = Read-Host "`nEnter the index of the network adapter you would like to change (1 to $($networkAdapters.Count))"
+
+        if ($adapterIndex -ge 1 -and $adapterIndex -le $networkAdapters.Count) {
+            $selectedAdapter = $networkAdapters[$adapterIndex - 1]
+
+            # Prompt the user to select a network
+            $networkName = Read-Host "`nEnter the name of the network you would like to change to"
+
+            # Change the network of the selected network adapter
+            $selectedAdapter | Set-NetworkAdapter -NetworkName $networkName
+            Write-Host "`n$vmName network adapter $($adapterIndex) has been set to $networkName" -ForegroundColor Green
+        } else {
+            Write-Host "Invalid input. Please enter a valid index." -ForegroundColor Yellow
+        }
+
+    } elseif ($promptChangeNetwork -eq "n" -or $promptChangeNetwork -eq "N") {
+        Write-Host "Exiting..." -ForegroundColor Yellow
+        Exit
+
+    } else {
+        Write-Host "Invalid input. Please enter 'Y' to change the network or 'N' to skip." -ForegroundColor Yellow
+        480setNetwork  # Call the 480setNetwork function to allow the user to try again
+    }
+}
