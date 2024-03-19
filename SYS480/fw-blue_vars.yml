@@ -1,0 +1,19 @@
+vyos:
+  hosts:
+    10.0.17.200:
+      hostname: fw-blue
+      mac: 00:50:56:8f:4e:16
+      wan_ip: 10.0.17.200
+      lan_ip: 10.0.5.2
+      lan: 10.0.5.0/24
+      nameserver: 10.0.17.4
+      gateway: 10.0.17.2
+      pool_name: blue
+      dhcp_name_server: 10.0.5.5
+      dhcp_domain: blue.local
+
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+    ansible_connection: network_cli
+    ansible_network_os: vyos
+    ansible_user: vyos

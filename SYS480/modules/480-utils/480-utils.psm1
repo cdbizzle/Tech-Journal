@@ -234,7 +234,7 @@ function 480newNet()
     if ([string]::IsNullOrEmpty($promptNewNetwork) -or $promptNewNetwork -eq "Y") {
         # Create a new network (virtual switch and portgroup
         $newNetwork = Read-Host "Enter the name of the new network"
-        New-VirtualSwitch -Name $newNetwork -VMHost $conf.esxiHost
+        New-VirtualSwitch -Name $newNetwork -VMHost "192.168.7.16"
         New-VirtualPortGroup -VirtualSwitch $newNetwork -Name $newNetwork
 
         # Print success report
