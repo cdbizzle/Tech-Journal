@@ -1,0 +1,10 @@
+network:
+  ethernets:
+    ens33:
+      addresses: [{{ lan_ip }}/24]
+      nameservers:
+        addresses: [{{ name_server }}, {{ gateway }}]
+      routes:
+        - to: default
+          via: {{ gateway }}
+  version: 2
