@@ -8,3 +8,9 @@ linux:
       vars:
         device: ens33
         ip: 10.0.5.30
+    impulse-agents:
+      hosts:
+        10.0.5.31:
+          manager_ip: 10.0.5.30
+          asset: j06b2ewg
+          preshare: lnsu8tts688vr8rfak9045s2bx7pvrqv
