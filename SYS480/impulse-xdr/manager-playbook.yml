@@ -36,7 +36,7 @@
         owner: root
         group: root
 
-    - name: install impulse xdr manager
+    - name: install impulse xdr manager (~10 minutes)
       become: yes
       command: sudo ./install_manager.sh
       args:
