@@ -3,14 +3,21 @@ linux:
   children:
     impulse:
       hosts: 
-        10.0.5.30:
-          hostname: impulse
+        10.0.5.30: # Specify the IP address of the target Impulse XDR Manager machine
+          hostname: impulse # Specify the hostname of the Impulse XDR Manager machine
       vars:
-        device: ens33
-        ip: 10.0.5.30
+        device: ens33 # Specify the network interface device name for the Impulse XDR Manager machine
+        ip: 10.0.5.30 # Specify the IP address of the Impulse XDR Manager machine
+
     impulse-agents:
       hosts:
-        10.0.5.31:
-          manager_ip: 10.0.5.30
-          asset: j06b2ewg
-          preshare: lnsu8tts688vr8rfak9045s2bx7pvrqv
+        10.0.5.31: # Specify the IP address of the target Impulse XDR Agent/Asset machine
+          
+          manager_ip: 10.0.5.30 # Point to the IP address of the Impulse XDR Manager machine
+
+          # The following two variables are used to download the specific agent tarball
+          # These can be found under "Manage Assets > Enroll Asset"
+          # Specify "Light Sensor", assign asset name, then copy "Asset ID" and "Auto-generated pre-shared key" into variables below
+          
+          asset: j06b2ewg # Asset ID
+          preshare: lnsu8tts688vr8rfak9045s2bx7pvrqv # Auto-generated pre-shared key
