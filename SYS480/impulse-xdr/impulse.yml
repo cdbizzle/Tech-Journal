@@ -1,0 +1,10 @@
+linux:
+  hosts:
+  children:
+    impulse:
+      hosts: 
+        10.0.5.30:
+          hostname: impulse
+      vars:
+        device: ens33
+        ip: 10.0.5.30

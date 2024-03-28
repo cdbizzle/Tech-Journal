@@ -1,0 +1,59 @@
+- name: install impulse xdr manager
+  hosts: impulse
+  tasks:
+    - name: set the hostname
+      hostname:
+        name: "{{ hostname }}"
+      become: yes
+
+    - name: download the tar package
+      become: yes
+      command: wget https://github.com/bgenev/impulse-xdr/releases/download/v.1.10/impulse-prod-release.tar.gz
+      args:
+        chdir: /opt
+    
+    - name: untar the package in /opt
+      become: yes
+      command: tar -xf impulse-prod-release.tar.gz
+      args:
+        chdir: /opt
+
+    - name: load impulse config from template
+      become: yes
+      template:
+        src: impulse.conf.j2
+        dest: /opt/impulse/impulse.conf
+        mode: "0644"
+        owner: root
+        group: root
+
+    - name: replace confirm_config.sh file
+      become: yes
+      copy:
+        src: confirm_config.sh
+        dest: /opt/impulse/install_modules/manager/confirm_config.sh
+        mode: "0755"
+        owner: root
+        group: root
+
+    - name: install impulse xdr manager
+      become: yes
+      command: sudo ./install_manager.sh
+      args:
+        chdir: /opt/impulse
+
+    - name: get password
+      become: yes
+      command: grep password /var/impulse/data/manager/manager_creds.txt
+      register: password
+      changed_when: false
+
+    - name: get username
+      become: yes
+      command: grep username /var/impulse/data/manager/manager_creds.txt
+      register: username
+      changed_when: false
+
+    - name: print login credentials
+      debug:
+        msg: Login to Impulse XDR Manager at https://{{ ip }}:7001 with {{ username.stdout }} and {{ password.stdout }}

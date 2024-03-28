@@ -24,6 +24,13 @@ linux:
           lan_ip: 10.0.5.31
       vars:
         device: ens33
+    impulse:
+      hosts: 
+        10.0.5.30:
+          hostname: impulse
+      vars:
+        device: ens33
+        ip: 10.0.5.30
   
   vars:
     public_key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCkytSQj/Q/594bkXZhh9ett0Iz7z59KNdxVwFwZoryMROhiPszYI/+Go9ULLZ0KX9PoxKYKbcVrwyxQTKzd4GmdhLfp1LDGxvpaBayb2shtvwKPFPabDVZcCETs2S7Z3y1mFKui1aZ6RumJtvpiOvZgYP5ffUdehJm0yZF6d0fHLN1bUAoKmCHl/C5IEcO1bAT/WeF8VIV8JBUSb5quSdkjRguBbyrr0538heBf+mFnI/eHx/y7raOOjv1bF3bYe1mboQGk43W/n9/KycUjfq54g43CumMi5lCCgI9d5RFzG4gKhwRLzACxGXfj+f3ul8nd1uAzs/dYSHSwPcKts4A+JUhUY+8MMMUq84NG3hj5ECoR4FPz9T+NW/HJVKrhZVPevyZutgYpAIUqlu7yJ2vufvsXr4Jm4aGIyyExqQO+hHS22w6RKbllsL6hoOeWGY7tNhvT+AmI4o5us2wUW8pnsfVuzdlYX0J+F6HkKnCKeakqqz7oHaq1njFOooaHtYr2ET4Ir7pfxJ+6FLHaYQqe0n8nkVxfJkAIvvMjAt50tQCr4yjoK7wDmThreXOvuPRS25BRLcEMC6Muvvhe+jvPFPT8GdTUpyN+bkTZ1GVfiPR1R8sQP+C9fP7aurJ+3B/EjJ6yOcbHgZ4cHcwCLiGE2Shn8GRaU5OB4BOZqdIZQ== cole@mgmt"
