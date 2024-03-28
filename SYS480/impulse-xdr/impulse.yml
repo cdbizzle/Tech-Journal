@@ -9,7 +9,7 @@ linux:
         device: ens33 # Specify the network interface device name for the Impulse XDR Manager machine
         ip: 10.0.5.30 # Specify the IP address of the Impulse XDR Manager machine
 
-    impulse-agents:
+    impulse_agents:
       hosts:
         10.0.5.31: # Specify the IP address of the target Impulse XDR Agent/Asset machine
           

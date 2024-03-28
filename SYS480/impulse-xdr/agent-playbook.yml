@@ -1,5 +1,5 @@
 - name: install impulse xdr manager
-  hosts: impulse-agents
+  hosts: impulse_agents
   tasks:
     - name: download agent tarball
       become: yes
