@@ -11,7 +11,7 @@
       args:
         chdir: /opt 
     
-    - name: install impulse xdr agent
+    - name: install impulse xdr agent (~3 minutes)
       become: yes
       command: sudo ./install_agent.sh
       args:
